@@ -1,5 +1,5 @@
 
-#include <shoom.h>
+#include <shoom/shoom.h>
 
 #include "lest.hpp"
 

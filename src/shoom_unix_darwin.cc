@@ -1,16 +1,18 @@
+#if !defined(WIN32)
+#include <fcntl.h>   // for O_* constants
+#include <unistd.h>  // unlink
 
-#include <shoom.h>
-
-#include <fcntl.h>     // for O_* constants
-#include <sys/mman.h>  // mmap, munmap
-#include <sys/stat.h>  // for mode constants
-#include <unistd.h>    // unlink
+#include <stdexcept>
 
 #if defined(__APPLE__)
 #include <errno.h>
-#endif // __APPLE__
+#endif  // __APPLE__
 
-#include <stdexcept>
+#include <shoom/shoom.h>
+#include <sys/mman.h>  // mmap, munmap
+#include <sys/stat.h>  // for mode constants
+
+using namespace std;
 
 namespace shoom {
 
@@ -58,7 +60,7 @@ ShoomError Shm::CreateOrOpen(bool create) {
                      MAP_SHARED,  // flags
                      fd_,         // fd
                      0            // offset
-                );
+  );
 
   if (memory == MAP_FAILED) {
     return kErrorMappingFailed;
@@ -80,3 +82,4 @@ Shm::~Shm() {
 }
 
 }  // namespace shoom
+#endif

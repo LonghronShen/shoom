@@ -1,37 +1,38 @@
+cmake_minimum_required(VERSION 3.1)
+set(project_name "shoom")
 
-cmake_minimum_required(VERSION 2.8)
+if(TARGET ${project_name})
+  return()
+endif()
 
-project(shoom)
+project(${project_name} C CXX)
 
 option(SHOOM_BUILD_TESTS "Build tests for shoom" ON)
 
-include_directories("include")
+file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.cc)
 
-if (SHOOM_BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(test)
-endif()
+add_library(${project_name} STATIC ${SOURCES})
 
-set (SOURCE_DIR src)
+target_include_directories(${project_name} PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include")
 
-if (${CMAKE_GENERATOR} MATCHES "Visual")
-set (SOURCES
-    ${SOURCE_DIR}/shoom_win32.cc
-)
+set_target_properties(${project_name} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+if(MSVC)
+  target_compile_options(${project_name} PRIVATE -W3 -EHsc)
 else()
-set (SOURCES
-    ${SOURCE_DIR}/shoom_unix_darwin.cc
-)
+  target_compile_features(${project_name} PUBLIC cxx_std_11)
 endif()
 
-add_library(shoom STATIC ${SOURCES})
-
-if (${CMAKE_GENERATOR} MATCHES "Visual")
-    target_compile_options(shoom PRIVATE -W3 -EHsc)
-else()
-    target_compile_options(shoom PRIVATE -Wall -Wno-missing-braces -std=c++11 -fPIC)
+if(UNIX)
+  find_library(LIBRT rt)
+  if(LIBRT)
+    target_link_libraries(shoom ${LIBRT})
+  endif()
 endif()
 
-if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_link_libraries(shoom -lrt) # shm_*
-endif() # Linux
+add_library(shoom::shoom ALIAS shoom)
+
+if(SHOOM_BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(test)
+endif()

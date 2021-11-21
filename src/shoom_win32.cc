@@ -1,7 +1,8 @@
-
-#include <shoom.h>
-
+#if defined(WIN32)
 #include <io.h>  // CreateFileMappingA, OpenFileMappingA, etc.
+#include <shoom/shoom.h>
+
+using namespace std;
 
 namespace shoom {
 
@@ -16,7 +17,7 @@ ShoomError Shm::CreateOrOpen(bool create) {
                                  PAGE_READWRITE,        // read/write access
                                  size_high_order, size_low_order,
                                  path_.c_str()  // name of mapping object
-                                 );
+    );
 
     if (!handle_) {
       return kErrorCreationFailed;
@@ -25,7 +26,7 @@ ShoomError Shm::CreateOrOpen(bool create) {
     handle_ = OpenFileMappingA(FILE_MAP_READ,  // read access
                                FALSE,          // do not inherit the name
                                path_.c_str()   // name of mapping object
-                               );
+    );
 
     if (!handle_) {
       return kErrorOpeningFailed;
@@ -56,3 +57,4 @@ Shm::~Shm() {
 }
 
 }  // namespace shoom
+#endif

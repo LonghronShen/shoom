@@ -1,17 +1,13 @@
 
-cmake_minimum_required(VERSION 2.8)
-
-project(test)
-
-add_executable(shoom_test shoom_test.cc)
-target_link_libraries(shoom_test shoom)
-
-if (${CMAKE_GENERATOR} MATCHES "Visual")
-    target_compile_options(shoom_test PRIVATE -W3 -EHsc)
-else()
-    target_compile_options(shoom_test PRIVATE -Wall -Wno-missing-braces -std=c++11)
-endif()
+cmake_minimum_required(VERSION 3.1)
+project(${project_name}-test C CXX)
 
 enable_testing()
 
-add_test(NAME shoom_test COMMAND shoom_test)
+file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/*.cc)
+
+add_executable(${project_name}-test ${SOURCES})
+
+target_link_libraries(${project_name}-test shoom)
+
+add_test(NAME ${project_name}-test COMMAND ${project_name}-test)
